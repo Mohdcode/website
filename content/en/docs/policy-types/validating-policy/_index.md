@@ -408,29 +408,29 @@ spec:
 
 ### ImageData library
 
-The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `imagedata.Get()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
+The **ImageData library** extends image inspection with OCI registry metadata like architecture, OS, digests, tags, and layers. Using `image.GetMetadata()`, it fetches details about container images from OCI registries, enabling precise validation of image content and compatibility.
 
 | CEL Expression | Purpose |
 |----------------|---------|
-| `imagedata.Get("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
-| `imagedata.Get("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
-| `imagedata.Get("nginx:1.21").config.author == "docker"` | Check the image author |
-| `imagedata.Get("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
-| `imagedata.Get("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
-| `imagedata.Get("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
-| `imagedata.Get("nginx:1.21").config.container == "nginx"` | Validate container name |
-| `imagedata.Get("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
-| `imagedata.Get("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
-| `imagedata.Get("nginx:1.21").layers.size() > 0` | Confirm the image has layers |
-| `imagedata.Get("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
-| `imagedata.Get("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
-| `imagedata.Get("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
-| `imagedata.Get("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
-| `imagedata.Get("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
-| `imagedata.Get("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
-| `imagedata.Get("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
+| `image.GetMetadata("nginx:1.21").config.architecture == "amd64"` | Ensure the image architecture is `amd64` |
+| `image.GetMetadata("nginx:1.21").config.os == "linux"` | Verify the image is built for Linux |
+| `image.GetMetadata("nginx:1.21").config.author == "docker"` | Check the image author |
+| `image.GetMetadata("nginx:1.21").config.variant == "v7"` | Validate architecture variant |
+| `image.GetMetadata("nginx:1.21").config.created != ""` | Ensure image has a creation timestamp |
+| `image.GetMetadata("nginx:1.21").config.docker_version.startsWith("20.")` | Check Docker version used to build the image |
+| `image.GetMetadata("nginx:1.21").config.container == "nginx"` | Validate container name |
+| `image.GetMetadata("nginx:1.21").config.os_features.exists(f, f == "sse4")` | Check if specific OS feature exists |
+| `image.GetMetadata("nginx:1.21").digest.startsWith("sha256:")` | Validate that image has a proper SHA256 digest |
+| `image.GetMetadata("nginx:1.21").layers.size() > 0` | Confirm the image has layers |
+| `image.GetMetadata("nginx:1.21").manifest.schemaVersion == 2` | Check if the image manifest uses schema version 2 |
+| `image.GetMetadata("nginx:1.21").manifest.mediaType == "application/vnd.docker.distribution.manifest.v2+json"` | Validate the media type of the image manifest |
+| `image.GetMetadata("nginx:1.21").manifest.layers.size() > 0` | Ensure the manifest lists image layers |
+| `image.GetMetadata("nginx:1.21").manifest.annotations.exists(a, a.key == "org.opencontainers.image.title")` | Check if a specific annotation is present |
+| `image.GetMetadata("nginx:1.21").manifest.subject != null` | Check if the image has a subject (e.g., SBOM reference) |
+| `image.GetMetadata("nginx:1.21").manifest.config.mediaType.contains("json")` | Validate that the config descriptor has a JSON media type |
+| `image.GetMetadata("nginx:1.21").manifest.layers.all(l, l.mediaType.startsWith("application/vnd.docker"))` | Ensure all layers have Docker-compatible media types |
 
-The `imagedata.Get()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
+The `image.GetMetadata()` function extracts key metadata from OCI images, allowing validation based on various attributes.  
 
 This sample policy ensures pod images have metadata, are amd64, and use manifest schema version 2:
 
@@ -453,7 +453,7 @@ spec:
     - name: imageKey
       expression: variables.imageRef
     - name: image
-      expression: imagedata.Get(variables.imageKey)
+      expression: image.GetMetadata(variables.imageKey)
 
   validations:
     - expression: variables.image != null
@@ -483,7 +483,7 @@ spec:
 | `mediaType`   | The media type of the image manifest.          | `application/vnd.docker.distribution.manifest.v2+json` |
 | `layers`      | A list of layer digests that make up the image. | `["sha256:layer1...", "sha256:layer2..."]` |
 
-In addition to these fields, `imagedata.Get()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
+In addition to these fields, `image.GetMetadata()` provides access to many other image metadata attributes, allowing validation based on specific security, compliance, or operational requirements.  
 
 
 ### GlobalContext library
